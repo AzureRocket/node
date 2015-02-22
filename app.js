@@ -4,7 +4,7 @@ var scripty = require('azure-scripty');
 var unirest = require('unirest');
 
 var app = express();
-var port = 3000;
+var port = process.env.PORT || 3000;
 
 var USR = 'rocket';
 var PWD = 'Rocket123';
@@ -22,7 +22,6 @@ app.get("/", function(req, res){
 var io = require('socket.io').listen(app.listen(port));
 
 io.sockets.on('connection', function (socket) {
-    // socket.emit('message', { message: 'welcome to the chat' });
     socket.on('send', function (data) {
         var certificate = data.certificate;
         var github = data.github;
@@ -34,33 +33,34 @@ io.sockets.on('connection', function (socket) {
             if(err) {
                 console.log(err);
             } else {
-                console.log("The file was saved!");
-                io.sockets.emit('message', { message: "generated certs for user @ " + path });
+                io.sockets.emit('message', { message: "Certificate acquired", command: "fs.writeFile" });
 
                 scripty.invoke('account import '+path, function(err, results){
                     console.log(err);
+                    
                     if(!err) {
-                        io.sockets.emit('message', { message: "imported user"});
-                        
-                        scripty.invoke('site create '+name+' --location="East US"', function(err, results){
+                        io.sockets.emit('message', { message: "Account imported", command: "azure account import"});
+                        var loc = "East US";
+                        scripty.invoke('site create '+name+' --location="'+loc+'"', function(err, results){
                             console.log(err);
                             if(!err) {
-                                console.log("worked!");
+                                io.sockets.emit('message', { message: "App created (location: "+loc+")", command: "azure site create"});
 
-                                // var b64 = new Buffer(USERNAME+":"+PASSWORD).toString('base64');
-                                var j = JSON.stringify({'format': 'basic', 'url': github});
-                                console.log(j);
+                                var j = JSON.stringifiy({'format': 'basic', 'url': github});
+
+                                io.sockets.emit('message', { message: "Clearing the skies...", command: null});
+                                io.sockets.emit('message', { message: "Building the app...", command: null});
 
                                 var Request = unirest.post('https://'+name+'.scm.azurewebsites.net/deploy')
                                 .header('Content-Type', 'applications/json')
                                 .send(j)
                                 .auth({username: USR, password: PWD})
-                                // .header('Authorization', "Basic " + b64)
                                 .end(function (response) {
                                     console.log(response);
+
+                                    io.sockets.emit('message', { message: "Success!", link: "http://"+name+".azurewebsites.net"});
                                 });
                             }
-
                         });
 
                     }
