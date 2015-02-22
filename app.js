@@ -23,10 +23,12 @@ var io = require('socket.io').listen(app.listen(port));
 
 io.sockets.on('connection', function (socket) {
     socket.on('send', function (data) {
+        console.log("Connected. Data incoming: " + data);
         var certificate = data.certificate;
         var github = data.github;
         var parts = github.split('.');
         var name = parts[parts.length-2].split('/').pop() + "-"+(Date.now() / 1000 | 0);
+        var URL = "http://"+name+".azurewebsites.net";
         var path = "/tmp/"+name+".publishsettings";
 
         fs.writeFile(path, certificate, function(err) {
@@ -57,9 +59,9 @@ io.sockets.on('connection', function (socket) {
                                 .send(j)
                                 .auth({username: USR, password: PWD})
                                 .end(function (response) {
-                                    console.log(response.body);
                                     if(!response.body) {
-                                        io.sockets.emit('message', { message: "Success!", link: "http://"+name+".azurewebsites.net"});
+                                        console.log("Success! " + URL);
+                                        io.sockets.emit('message', { message: "Success!", link: URL});
                                     } else {
                                         console.log("ERROR: "+response.body);
                                     }
