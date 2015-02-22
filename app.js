@@ -6,8 +6,8 @@ var unirest = require('unirest');
 var app = express();
 var port = process.env.PORT || 3000;
 
-var USR = 'rocket';
-var PWD = 'Rocket123';
+var USR = process.env.USR || 'rocket';
+var PWD = process.env.PWD || 'Rocket123';
  
  //remove
 app.set('views', __dirname);
