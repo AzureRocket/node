@@ -6,8 +6,8 @@ var unirest = require('unirest');
 var app = express();
 var port = 3000;
 
-var USERNAME = 'rocket';
-var PASSWORD = 'Rocket123';
+var USR = 'rocket';
+var PWD = 'Rocket123';
  
  //remove
 app.set('views', __dirname);
@@ -39,24 +39,23 @@ io.sockets.on('connection', function (socket) {
 
                 scripty.invoke('account import '+path, function(err, results){
                     console.log(err);
-                    console.log(results) //shows the site details 
-
                     if(!err) {
                         io.sockets.emit('message', { message: "imported user"});
                         
-                        scripty.invoke('site create '+name+' --location="West US"', function(err, results){
+                        scripty.invoke('site create '+name+' --location="East US"', function(err, results){
                             console.log(err);
-                            console.log(results);
-
                             if(!err) {
                                 console.log("worked!");
 
-                                var b64 = new Buffer(USERNAME+":"+PASSWORD).toString('base64');
+                                // var b64 = new Buffer(USERNAME+":"+PASSWORD).toString('base64');
+                                var j = JSON.stringify({'format': 'basic', 'url': github});
+                                console.log(j);
 
-                                var Request = unirest.post('http://'+name+'.scm.azurewebsites.net/deploy')
-                                .header('Accept', 'application/json')
-                                .send({'format': 'basic', 'url': github})
-                                .header('Authorization', "Basic " + b64);
+                                var Request = unirest.post('https://'+name+'.scm.azurewebsites.net/deploy')
+                                .header('Content-Type', 'applications/json')
+                                .send(j)
+                                .auth({username: USR, password: PWD})
+                                // .header('Authorization', "Basic " + b64)
                                 .end(function (response) {
                                     console.log(response);
                                 });
