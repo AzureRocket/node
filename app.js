@@ -23,7 +23,7 @@ var io = require('socket.io').listen(app.listen(port));
 
 io.sockets.on('connection', function (socket) {
     socket.on('send', function (data) {
-        console.log("Connected. Data incoming: " + data);
+        console.log("Connected. Data incoming: " + JSON.stringify(data));
         var certificate = data.certificate;
         var github = data.github;
         var parts = github.split('.');
