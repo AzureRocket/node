@@ -54,7 +54,7 @@ io.sockets.on('connection', function (socket) {
                                 io.sockets.emit('message', { message: "Building the app...", command: null});
                                 console.log("Building...");
 
-                                var Request = unirest.post('https://'+name+'.scm.azurewebsites.net/deploy')
+                                var Request = unirest.post('https://' + name + '.scm.azurewebsites.net/deploy')
                                 .header('Content-Type', 'applications/json')
                                 .send(j)
                                 .auth({username: USR, password: PWD})
@@ -63,20 +63,24 @@ io.sockets.on('connection', function (socket) {
                                         console.log("Success! " + URL);
                                         io.sockets.emit('message', { message: "Success!", link: URL});
                                     } else {
-                                        console.log("ERROR: "+response.body);
+                                        io.sockets.emit('message', { message: "Something went wrong!", error: response.body});
+                                        console.log("ERROR: " + response.body);
                                     }
                                 });
                             } else {
-                                console.log("ERROR: "+err);
+                                io.sockets.emit('message', { message: "Something went wrong!", error: err});
+                                console.log("ERROR: " + err);
                             }
                         });
 
                     } else {
-                        console.log("ERROR: "+err);
+                        io.sockets.emit('message', { message: "Something went wrong!", error: err});
+                        console.log("ERROR: " + err);
                     }
                 });
             } else {
-                console.log("ERROR: "+err);
+                io.sockets.emit('message', { message: "Something went wrong!", error: err});
+                console.log("ERROR: " + err);
             }
         }); 
     });
