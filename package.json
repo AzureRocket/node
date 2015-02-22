@@ -1,0 +1,14 @@
+{
+    "name": "Rocket",
+    "version": "0.0.1",
+    "description": "azure",
+    "dependencies": {
+        "socket.io": "latest",
+        "express": "latest",
+        "azure-scripty": "latest",
+        "fs": "latest",
+        "jade": "latest",
+        "unirest": "latest"
+    },
+    "author": "developer"
+}
